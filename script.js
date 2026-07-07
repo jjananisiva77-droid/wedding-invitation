@@ -1,426 +1,602 @@
-/**
- * Premium South Indian Wedding Invitation Website
- * Enhanced JavaScript with smooth interactions and dynamic features
- */
+/* =====================================================================
+   SUDHARSAN ❤️ JANANI
+   Luxury Premium Wedding Invitation Website
 
-// ============================================
-// CONFIGURATION
-// ============================================
+   JavaScript Implementation
+   Production-Ready Code with GSAP Animations
+===================================================================== */
 
-const CONFIG = {
-    weddingDate: new Date('2025-05-07T10:30:00').getTime(),
-    musicEnabled: false,
-    autoPlayMusic: false,
-};
+'use strict';
 
-// ============================================
-// DOM ELEMENTS CACHE
-// ============================================
+/* =====================================================================
+   INITIALIZATION & CONFIGURATION
+===================================================================== */
 
-const DOM = {
-    loadingScreen: document.getElementById('loadingScreen'),
-    scrollProgress: document.getElementById('scrollProgress'),
-    musicToggle: document.getElementById('musicToggle'),
-    backgroundMusic: document.getElementById('backgroundMusic'),
-    backToTop: document.getElementById('backToTop'),
-    heroSection: document.getElementById('heroSection'),
-    countdownSection: document.getElementById('countdownSection'),
-    carouselTrack: document.getElementById('carouselTrack'),
-    carouselPrev: document.getElementById('carouselPrev'),
-    carouselNext: document.getElementById('carouselNext'),
-    carouselIndicators: document.getElementById('carouselIndicators'),
-};
+// Register GSAP ScrollTrigger Plugin
+gsap.registerPlugin(ScrollTrigger);
 
-// ============================================
-// INITIALIZATION
-// ============================================
-
-document.addEventListener('DOMContentLoaded', () => {
-    initializeLoading();
-    initializeScrollProgress();
-    initializeCountdown();
-    initializeCarousel();
-    initializeMusicControls();
-    initializeBackToTop();
-    initializeScrollAnimations();
-    initializeParallax();
+// Smooth Scrolling with Lenis
+const lenis = new Lenis({
+    duration: 1.2,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    direction: 'vertical',
+    gestureDirection: 'vertical',
+    smooth: true,
+    mouseMultiplier: 1,
+    smoothTouch: false,
+    touchMultiplier: 2,
+    infinite: false,
 });
 
-// ============================================
-// LOADING SCREEN
-// ============================================
-
-function initializeLoading() {
-    setTimeout(() => {
-        DOM.loadingScreen.style.pointerEvents = 'none';
-    }, 2500);
+// Request Animation Frame Loop for Lenis
+function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
 }
+requestAnimationFrame(raf);
 
-// ============================================
-// SCROLL PROGRESS INDICATOR
-// ============================================
+// Update ScrollTrigger on Lenis scroll
+lenis.on('scroll', ScrollTrigger.update);
 
-function initializeScrollProgress() {
-    window.addEventListener('scroll', updateScrollProgress);
-}
+// Tell GSAP to use Lenis for scrollTo
+gsap.ticker.add((time) => {
+    lenis.raf(time * 1000);
+});
 
-function updateScrollProgress() {
-    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const scrolled = window.scrollY;
-    const scrollPercent = scrollHeight > 0 ? (scrolled / scrollHeight) * 100 : 0;
-    DOM.scrollProgress.style.width = scrollPercent + '%';
-}
+gsap.ticker.lagSmoothing(0);
 
-// ============================================
-// COUNTDOWN TIMER
-// ============================================
+/* =====================================================================
+   LOADER ANIMATION
+===================================================================== */
 
-function initializeCountdown() {
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
-}
+window.addEventListener('load', () => {
+    const loader = document.getElementById('loader');
+    const loaderOm = document.querySelector('.loader-om');
+    const loaderText = document.querySelectorAll('.loader-content h2, .loader-content p');
 
-function updateCountdown() {
-    const now = new Date().getTime();
-    const timeLeft = CONFIG.weddingDate - now;
-
-    if (timeLeft < 0) {
-        setCountdownElements('0', '0', '0', '0');
-        return;
-    }
-
-    const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-    setCountdownElements(
-        String(days).padStart(2, '0'),
-        String(hours).padStart(2, '0'),
-        String(minutes).padStart(2, '0'),
-        String(seconds).padStart(2, '0')
-    );
-}
-
-function setCountdownElements(days, hours, minutes, seconds) {
-    const daysEl = document.getElementById('days');
-    const hoursEl = document.getElementById('hours');
-    const minutesEl = document.getElementById('minutes');
-    const secondsEl = document.getElementById('seconds');
-
-    if (daysEl) daysEl.textContent = days;
-    if (hoursEl) hoursEl.textContent = hours;
-    if (minutesEl) minutesEl.textContent = minutes;
-    if (secondsEl) secondsEl.textContent = seconds;
-}
-
-// ============================================
-// GALLERY CAROUSEL
-// ============================================
-
-function initializeCarousel() {
-    const galleryItems = document.querySelectorAll('.gallery-item');
-    const totalItems = galleryItems.length;
-
-    if (totalItems === 0) return;
-
-    let currentIndex = 0;
-
-    // Create indicators
-    galleryItems.forEach((_, index) => {
-        const indicator = document.createElement('div');
-        indicator.className = 'carousel-indicator';
-        if (index === 0) indicator.classList.add('active');
-        indicator.addEventListener('click', () => goToSlide(index));
-        DOM.carouselIndicators.appendChild(indicator);
-    });
-
-    function updateCarousel() {
-        const offset = -currentIndex * 100;
-        DOM.carouselTrack.style.transform = `translateX(${offset}%)`;
-
-        // Update indicators
-        document.querySelectorAll('.carousel-indicator').forEach((indicator, index) => {
-            indicator.classList.toggle('active', index === currentIndex);
-        });
-    }
-
-    function goToSlide(index) {
-        currentIndex = (index + totalItems) % totalItems;
-        updateCarousel();
-    }
-
-    function nextSlide() {
-        currentIndex = (currentIndex + 1) % totalItems;
-        updateCarousel();
-    }
-
-    function prevSlide() {
-        currentIndex = (currentIndex - 1 + totalItems) % totalItems;
-        updateCarousel();
-    }
-
-    // Event listeners
-    DOM.carouselNext.addEventListener('click', nextSlide);
-    DOM.carouselPrev.addEventListener('click', prevSlide);
-
-    // Keyboard navigation
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowRight') nextSlide();
-        if (e.key === 'ArrowLeft') prevSlide();
-    });
-
-    // Touch navigation for mobile
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    DOM.carouselTrack.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-    });
-
-    DOM.carouselTrack.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        if (touchStartX - touchEndX > 50) nextSlide();
-        if (touchEndX - touchStartX > 50) prevSlide();
-    });
-
-    // Auto-advance carousel
-    setInterval(nextSlide, 6000);
-}
-
-// ============================================
-// MUSIC CONTROLS
-// ============================================
-
-function initializeMusicControls() {
-    DOM.musicToggle.addEventListener('click', toggleMusic);
-}
-
-function toggleMusic() {
-    const isPlaying = !DOM.backgroundMusic.paused;
-
-    if (isPlaying) {
-        DOM.backgroundMusic.pause();
-        DOM.musicToggle.classList.remove('active');
-    } else {
-        DOM.backgroundMusic.play().catch((error) => {
-            console.log('Audio playback failed:', error);
-        });
-        DOM.musicToggle.classList.add('active');
-    }
-}
-
-// ============================================
-// BACK TO TOP BUTTON
-// ============================================
-
-function initializeBackToTop() {
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 300) {
-            DOM.backToTop.classList.add('show');
-        } else {
-            DOM.backToTop.classList.remove('show');
-        }
-    });
-
-    DOM.backToTop.addEventListener('click', () => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth',
-        });
-    });
-}
-
-// ============================================
-// SCROLL ANIMATIONS
-// ============================================
-
-function initializeScrollAnimations() {
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px',
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
+    // Animate loader elements
+    gsap.timeline()
+        .to(loaderOm, {
+            scale: 1.2,
+            duration: 0.6,
+            ease: 'power2.out'
+        })
+        .to(loaderOm, {
+            scale: 1,
+            duration: 0.6,
+            ease: 'elastic.out(1, 0.5)'
+        })
+        .to(loaderText, {
+            opacity: 0,
+            y: -20,
+            duration: 0.5,
+            stagger: 0.1,
+            delay: 1
+        })
+        .to(loaderOm, {
+            scale: 0,
+            opacity: 0,
+            duration: 0.8,
+            ease: 'power3.in'
+        }, '-=0.3')
+        .to(loader, {
+            opacity: 0,
+            duration: 0.6,
+            ease: 'power2.inOut',
+            onComplete: () => {
+                loader.classList.add('hidden');
+                document.body.style.overflow = 'visible';
+                initHeroAnimations();
             }
         });
-    }, observerOptions);
+});
 
-    // Observe elements for scroll animations
-    const elementsToObserve = [
-        '.couple-story',
-        '.countdown-section',
-        '.gallery-section',
-        '.venue-section',
-    ];
+/* =====================================================================
+   HERO ANIMATIONS
+===================================================================== */
 
-    elementsToObserve.forEach((selector) => {
-        document.querySelectorAll(selector).forEach((element) => {
-            element.style.opacity = '0';
-            element.style.transform = 'translateY(30px)';
-            element.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
-            observer.observe(element);
-        });
-    });
+function initHeroAnimations() {
+    const heroTimeline = gsap.timeline();
+
+    // Animate hero content elements
+    heroTimeline
+        .from('.hero-top', {
+            opacity: 0,
+            y: 50,
+            duration: 1,
+            ease: 'power3.out'
+        })
+        .from('.hero-middle h1:first-child', {
+            opacity: 0,
+            x: -100,
+            scale: 0.8,
+            duration: 1.2,
+            ease: 'power4.out'
+        }, '-=0.5')
+        .from('.hero-heart', {
+            opacity: 0,
+            scale: 0,
+            duration: 1,
+            ease: 'elastic.out(1, 0.5)'
+        }, '-=0.8')
+        .from('.hero-middle h1:last-child', {
+            opacity: 0,
+            x: 100,
+            scale: 0.8,
+            duration: 1.2,
+            ease: 'power4.out'
+        }, '-=1')
+        .from('.hero-bottom', {
+            opacity: 0,
+            y: 30,
+            duration: 1,
+            ease: 'power3.out'
+        }, '-=0.5')
+        .from('.scroll-indicator', {
+            opacity: 0,
+            y: -20,
+            duration: 0.8,
+            ease: 'power2.out'
+        }, '-=0.3');
 }
 
-// ============================================
-// PARALLAX EFFECT
-// ============================================
+/* =====================================================================
+   NAVBAR SCROLL EFFECT
+===================================================================== */
 
-function initializeParallax() {
-    window.addEventListener('scroll', () => {
-        const scrollY = window.scrollY;
-        const heroImage = document.querySelector('.hero-bg-image');
+const navbar = document.querySelector('nav');
+let lastScroll = 0;
 
-        if (heroImage && scrollY < window.innerHeight) {
-            heroImage.style.transform = `translateY(${scrollY * 0.4}px)`;
-        }
-    });
-}
+window.addEventListener('scroll', () => {
+    const currentScroll = window.pageYOffset;
 
-// ============================================
-// SMOOTH SCROLL FOR INTERNAL LINKS
-// ============================================
+    if (currentScroll > 100) {
+        navbar.classList.add('scrolled');
+    } else {
+        navbar.classList.remove('scrolled');
+    }
 
-document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    lastScroll = currentScroll;
+});
+
+/* =====================================================================
+   SMOOTH SCROLL FOR NAVIGATION LINKS
+===================================================================== */
+
+document.querySelectorAll('nav a[href^="#"], .enter-btn').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
-        const href = this.getAttribute('href');
-        if (href === '#') return;
-
         e.preventDefault();
-        const target = document.querySelector(href);
+        const target = document.querySelector(this.getAttribute('href'));
 
         if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start',
+            lenis.scrollTo(target, {
+                offset: -100,
+                duration: 1.5,
+                easing: (t) => t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1
             });
         }
     });
 });
 
-// ============================================
-// LAZY LOADING FOR IMAGES
-// ============================================
+/* =====================================================================
+   COUNTDOWN TIMER
+===================================================================== */
 
+function initCountdown() {
+    // Wedding Date: May 7, 2025 (Update time when muhurtham is announced)
+    const weddingDate = new Date('2025-05-07T00:00:00').getTime();
+
+    const daysElement = document.getElementById('days');
+    const hoursElement = document.getElementById('hours');
+    const minutesElement = document.getElementById('minutes');
+    const secondsElement = document.getElementById('seconds');
+
+    function updateCountdown() {
+        const now = new Date().getTime();
+        const distance = weddingDate - now;
+
+        if (distance < 0) {
+            // Wedding day has arrived
+            daysElement.textContent = '00';
+            hoursElement.textContent = '00';
+            minutesElement.textContent = '00';
+            secondsElement.textContent = '00';
+            return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        // Add flip animation effect
+        animateNumber(daysElement, days);
+        animateNumber(hoursElement, hours);
+        animateNumber(minutesElement, minutes);
+        animateNumber(secondsElement, seconds);
+    }
+
+    function animateNumber(element, value) {
+        const newValue = String(value).padStart(2, '0');
+        const oldValue = element.textContent;
+
+        if (newValue !== oldValue) {
+            gsap.fromTo(element,
+                {
+                    y: -20,
+                    opacity: 0
+                },
+                {
+                    y: 0,
+                    opacity: 1,
+                    duration: 0.5,
+                    ease: 'power2.out',
+                    onStart: () => {
+                        element.textContent = newValue;
+                    }
+                }
+            );
+        }
+    }
+
+    // Update countdown every second
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+}
+
+// Initialize countdown when page loads
+initCountdown();
+
+/* =====================================================================
+   SCROLL ANIMATIONS - GSAP ScrollTrigger
+===================================================================== */
+
+// Story Section Animation
+gsap.from('.story-image', {
+    scrollTrigger: {
+        trigger: '.story-section',
+        start: 'top 80%',
+        end: 'bottom 20%',
+        toggleActions: 'play none none reverse'
+    },
+    x: -100,
+    opacity: 0,
+    duration: 1.2,
+    ease: 'power3.out'
+});
+
+gsap.from('.story-content', {
+    scrollTrigger: {
+        trigger: '.story-section',
+        start: 'top 80%',
+        end: 'bottom 20%',
+        toggleActions: 'play none none reverse'
+    },
+    x: 100,
+    opacity: 0,
+    duration: 1.2,
+    ease: 'power3.out'
+});
+
+// Wedding Details Animation
+gsap.from('.detail-box', {
+    scrollTrigger: {
+        trigger: '.details-section',
+        start: 'top 75%',
+        end: 'bottom 20%',
+        toggleActions: 'play none none reverse'
+    },
+    y: 80,
+    opacity: 0,
+    duration: 1,
+    stagger: 0.2,
+    ease: 'power3.out'
+});
+
+// Countdown Animation
+gsap.from('.count-box', {
+    scrollTrigger: {
+        trigger: '.countdown-section',
+        start: 'top 75%',
+        end: 'bottom 20%',
+        toggleActions: 'play none none reverse'
+    },
+    scale: 0.8,
+    opacity: 0,
+    duration: 1,
+    stagger: 0.15,
+    ease: 'back.out(1.7)'
+});
+
+// Gallery Animation
+gsap.from('.gallery-item', {
+    scrollTrigger: {
+        trigger: '.gallery-section',
+        start: 'top 75%',
+        end: 'bottom 20%',
+        toggleActions: 'play none none reverse'
+    },
+    y: 60,
+    opacity: 0,
+    duration: 0.8,
+    stagger: 0.1,
+    ease: 'power2.out'
+});
+
+// Venue Animation
+gsap.from('.venue-left', {
+    scrollTrigger: {
+        trigger: '.venue-section',
+        start: 'top 75%',
+        end: 'bottom 20%',
+        toggleActions: 'play none none reverse'
+    },
+    x: -80,
+    opacity: 0,
+    duration: 1.2,
+    ease: 'power3.out'
+});
+
+gsap.from('.venue-right', {
+    scrollTrigger: {
+        trigger: '.venue-section',
+        start: 'top 75%',
+        end: 'bottom 20%',
+        toggleActions: 'play none none reverse'
+    },
+    x: 80,
+    opacity: 0,
+    duration: 1.2,
+    ease: 'power3.out'
+});
+
+// RSVP Animation
+gsap.from('.rsvp-card', {
+    scrollTrigger: {
+        trigger: '.rsvp-section',
+        start: 'top 75%',
+        end: 'bottom 20%',
+        toggleActions: 'play none none reverse'
+    },
+    scale: 0.9,
+    opacity: 0,
+    duration: 1,
+    ease: 'power3.out'
+});
+
+// Footer Animation
+gsap.from('.footer-content', {
+    scrollTrigger: {
+        trigger: 'footer',
+        start: 'top 85%',
+        end: 'bottom 20%',
+        toggleActions: 'play none none reverse'
+    },
+    y: 50,
+    opacity: 0,
+    duration: 1,
+    ease: 'power3.out'
+});
+
+/* =====================================================================
+   PARALLAX EFFECTS
+===================================================================== */
+
+// Hero background parallax
+gsap.to('.hero-bg', {
+    scrollTrigger: {
+        trigger: '.hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 1
+    },
+    y: 300,
+    ease: 'none'
+});
+
+// Story image parallax
+gsap.to('.story-image img', {
+    scrollTrigger: {
+        trigger: '.story-section',
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: 1
+    },
+    y: 50,
+    ease: 'none'
+});
+
+/* =====================================================================
+   GALLERY HOVER EFFECTS
+===================================================================== */
+
+document.querySelectorAll('.gallery-item').forEach(item => {
+    item.addEventListener('mouseenter', function() {
+        gsap.to(this.querySelector('img'), {
+            scale: 1.15,
+            duration: 0.8,
+            ease: 'power2.out'
+        });
+    });
+
+    item.addEventListener('mouseleave', function() {
+        gsap.to(this.querySelector('img'), {
+            scale: 1,
+            duration: 0.8,
+            ease: 'power2.out'
+        });
+    });
+});
+
+/* =====================================================================
+   DETAIL BOX HOVER EFFECTS
+===================================================================== */
+
+document.querySelectorAll('.detail-box').forEach(box => {
+    box.addEventListener('mouseenter', function() {
+        gsap.to(this.querySelector('.detail-icon'), {
+            rotation: 360,
+            scale: 1.1,
+            duration: 0.8,
+            ease: 'power2.out'
+        });
+    });
+
+    box.addEventListener('mouseleave', function() {
+        gsap.to(this.querySelector('.detail-icon'), {
+            rotation: 0,
+            scale: 1,
+            duration: 0.8,
+            ease: 'power2.out'
+        });
+    });
+});
+
+/* =====================================================================
+   BUTTON RIPPLE EFFECT
+===================================================================== */
+
+function createRipple(event) {
+    const button = event.currentTarget;
+    const ripple = document.createElement('span');
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const x = event.clientX - rect.left - size / 2;
+    const y = event.clientY - rect.top - size / 2;
+
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = x + 'px';
+    ripple.style.top = y + 'px';
+    ripple.classList.add('ripple');
+
+    button.appendChild(ripple);
+
+    setTimeout(() => {
+        ripple.remove();
+    }, 600);
+}
+
+document.querySelectorAll('.enter-btn, .map-btn, .rsvp-buttons a').forEach(button => {
+    button.addEventListener('click', createRipple);
+});
+
+/* =====================================================================
+   SECTION TITLE ANIMATIONS
+===================================================================== */
+
+document.querySelectorAll('.section-title').forEach(title => {
+    gsap.from(title, {
+        scrollTrigger: {
+            trigger: title,
+            start: 'top 85%',
+            end: 'bottom 20%',
+            toggleActions: 'play none none reverse'
+        },
+        y: 30,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power2.out'
+    });
+});
+
+/* =====================================================================
+   FLOATING ANIMATION FOR GOLD FRAME
+===================================================================== */
+
+gsap.to('.gold-frame', {
+    y: -10,
+    duration: 3,
+    ease: 'power1.inOut',
+    repeat: -1,
+    yoyo: true
+});
+
+/* =====================================================================
+   CURSOR TRAIL EFFECT (OPTIONAL LUXURY FEATURE)
+===================================================================== */
+
+const cursor = document.createElement('div');
+cursor.classList.add('luxury-cursor');
+document.body.appendChild(cursor);
+
+document.addEventListener('mousemove', (e) => {
+    gsap.to(cursor, {
+        x: e.clientX,
+        y: e.clientY,
+        duration: 0.5,
+        ease: 'power2.out'
+    });
+});
+
+// Add cursor styles dynamically
+const cursorStyle = document.createElement('style');
+cursorStyle.textContent = `
+    .luxury-cursor {
+        position: fixed;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid rgba(212, 175, 55, 0.5);
+        pointer-events: none;
+        z-index: 9999;
+        mix-blend-mode: difference;
+        transition: transform 0.2s ease;
+    }
+
+    .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.6);
+        transform: scale(0);
+        animation: ripple-animation 0.6s ease-out;
+        pointer-events: none;
+    }
+
+    @keyframes ripple-animation {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(cursorStyle);
+
+/* =====================================================================
+   PERFORMANCE OPTIMIZATION
+===================================================================== */
+
+// Lazy load images
 if ('IntersectionObserver' in window) {
-    const imageObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
             if (entry.isIntersecting) {
                 const img = entry.target;
-                if (img.dataset.src) {
-                    img.src = img.dataset.src;
-                    img.removeAttribute('data-src');
-                    imageObserver.unobserve(img);
-                }
+                img.src = img.dataset.src || img.src;
+                img.classList.add('loaded');
+                observer.unobserve(img);
             }
         });
     });
 
-    document.querySelectorAll('img[data-src]').forEach((img) => {
+    document.querySelectorAll('img').forEach(img => {
         imageObserver.observe(img);
     });
 }
 
-// ============================================
-// UTILITY: BROWSER FEATURE DETECTION
-// ============================================
-
-function detectBrowserFeatures() {
-    return {
-        localStorage: typeof Storage !== 'undefined',
-        intersectionObserver: 'IntersectionObserver' in window,
-        cssVariables: CSS.supports('color', 'var(--color-brown)'),
-        smoothScroll: 'scrollBehavior' in document.documentElement.style,
-        touchEvents: 'ontouchstart' in window,
-    };
+// Reduce motion for users who prefer it
+if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    gsap.globalTimeline.timeScale(0.01);
+    lenis.destroy();
 }
 
-// ============================================
-// CONSOLE MESSAGING
-// ============================================
+/* =====================================================================
+   CONSOLE MESSAGE
+===================================================================== */
 
-console.log('%c✨ Sudharsan & Janani - Wedding Invitation ✨', 
-    'color: #D4AF37; font-size: 16px; font-weight: bold; text-shadow: 2px 2px 4px #5A3A22');
-console.log('%cMade with ❤️ and Care', 'color: #5A3A22; font-size: 12px; font-weight: bold;');
+console.log('%c💍 Sudharsan ❤️ Janani', 'font-size: 24px; color: #D4AF37; font-weight: bold;');
+console.log('%cLuxury Wedding Invitation Website', 'font-size: 14px; color: #4E342E;');
+console.log('%cWith Divine Blessings of Goddess Meenakshi Amman', 'font-size: 12px; color: #6D4C41; font-style: italic;');
 
-const features = detectBrowserFeatures();
-console.log('%c📋 Browser Capabilities:', 'color: #D4AF37; font-weight: bold;');
-Object.entries(features).forEach(([feature, supported]) => {
-    console.log(`   ${feature}: ${supported ? '✓ Supported' : '✗ Not Supported'}`);
-});
-
-// ============================================
-// ACCESSIBILITY FEATURES
-// ============================================
-
-// Skip to main content link for accessibility
-function addAccessibilityFeatures() {
-    if (!document.querySelector('.skip-link')) {
-        const skipLink = document.createElement('a');
-        skipLink.href = '#main-content';
-        skipLink.className = 'skip-link';
-        skipLink.textContent = 'Skip to main content';
-        document.body.prepend(skipLink);
-    }
-}
-
-addAccessibilityFeatures();
-
-// ============================================
-// MOBILE MENU HANDLING (if needed)
-// ============================================
-
-// Detect viewport changes
-window.addEventListener('orientationchange', () => {
-    console.log('Orientation changed');
-});
-
-// ============================================
-// PERFORMANCE MONITORING
-// ============================================
-
-if (window.performance && window.performance.timing) {
-    window.addEventListener('load', () => {
-        const perfData = window.performance.timing;
-        const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
-        console.log(`%c⏱️ Page Load Time: ${pageLoadTime}ms`, 'color: #D4AF37;');
-    });
-}
-
-// ============================================
-// ERROR HANDLING
-// ============================================
-
-window.addEventListener('error', (event) => {
-    console.error('Global error:', event.error);
-});
-
-window.addEventListener('unhandledrejection', (event) => {
-    console.error('Unhandled promise rejection:', event.reason);
-});
-
-// ============================================
-// RESPONSIVE IMAGE SRCSET SUPPORT
-// ============================================
-
-// Detect if browser supports srcset
-const supportsSrcset = 'srcset' in new Image();
-console.log(`%cSrcset Support: ${supportsSrcset ? '✓' : '✗'}`, 'color: #D4AF37;');
-
-// ============================================
-// VIEWPORT UNITS POLYFILL CHECK
-// ============================================
-
-const viewportUnitsSupport = () => {
-    const test = document.createElement('div');
-    test.style.width = '100vh';
-    return test.style.width !== '';
-};
-
-console.log(`%cViewport Units Support: ${viewportUnitsSupport() ? '✓' : '✗'}`, 'color: #D4AF37;');
+/* =====================================================================
+   END OF SCRIPT
+===================================================================== */
