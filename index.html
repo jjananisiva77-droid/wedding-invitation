@@ -61,7 +61,7 @@ href="style.css">
 
 Sudharsan
 
-<span>❤</span>
+<span>&hearts;</span>
 
 Janani
 
@@ -345,13 +345,13 @@ id="details">
 
 <h3>
 
-07 May
+To Be Announced
 
 </h3>
 
 <p>
 
-Wednesday
+Save the date
 
 </p>
 
@@ -413,91 +413,6 @@ Madurai
 
 
 
-<!-- ========================================= -->
-
-<!-- COUNTDOWN -->
-
-<!-- ========================================= -->
-
-<section class="countdown-section">
-
-<div class="section-title">
-
-<span>Countdown</span>
-
-<h2>Our Forever Begins In</h2>
-
-</div>
-
-<div class="countdown-wrapper">
-
-<div class="count-box">
-
-<h1 id="days">
-
-00
-
-</h1>
-
-<p>
-
-Days
-
-</p>
-
-</div>
-
-<div class="count-box">
-
-<h1 id="hours">
-
-00
-
-</h1>
-
-<p>
-
-Hours
-
-</p>
-
-</div>
-
-<div class="count-box">
-
-<h1 id="minutes">
-
-00
-
-</h1>
-
-<p>
-
-Minutes
-
-</p>
-
-</div>
-
-<div class="count-box">
-
-<h1 id="seconds">
-
-00
-
-</h1>
-
-<p>
-
-Seconds
-
-</p>
-
-</div>
-
-</div>
-
-</section>
 <!-- ========================================= -->
 <!-- GALLERY -->
 <!-- ========================================= -->
@@ -686,11 +601,7 @@ WhatsApp
 
 <h2>
 
-Sudharsan
-
-<span>❤</span>
-
-Janani
+Sudharsan <span>&hearts;</span> Janani
 
 </h2>
 
@@ -719,6 +630,24 @@ We Await Your Gracious Presence
 
 
 <script src="js/script.js"></script>
+
+<script>
+// Fallback loader hide
+window.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        const loader = document.getElementById('loader');
+        const body = document.body;
+        if (loader && loader.style.opacity !== '0') {
+            loader.style.transition = 'opacity 0.8s ease';
+            loader.style.opacity = '0';
+            setTimeout(function() {
+                loader.style.display = 'none';
+                body.classList.remove('loading');
+            }, 800);
+        }
+    }, 2500);
+});
+</script>
 
 </body>
 
