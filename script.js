@@ -1,6 +1,6 @@
 /**
  * Premium South Indian Wedding Invitation Website
- * JavaScript functionality for animations, interactions, and dynamic features
+ * Enhanced JavaScript with smooth interactions and dynamic features
  */
 
 // ============================================
@@ -8,26 +8,28 @@
 // ============================================
 
 const CONFIG = {
-    weddingDate: new Date('2026-05-07T00:00:00').getTime(),
-    musicEnabled: true,
+    weddingDate: new Date('2025-05-07T10:30:00').getTime(),
+    musicEnabled: false,
     autoPlayMusic: false,
 };
 
 // ============================================
-// DOM ELEMENTS
+// DOM ELEMENTS CACHE
 // ============================================
 
-const loadingScreen = document.getElementById('loadingScreen');
-const scrollProgress = document.getElementById('scrollProgress');
-const musicToggle = document.getElementById('musicToggle');
-const backgroundMusic = document.getElementById('backgroundMusic');
-const backToTop = document.getElementById('backToTop');
-const enterButton = document.getElementById('enterButton');
-const heroSection = document.getElementById('heroSection');
-const carouselTrack = document.getElementById('carouselTrack');
-const carouselPrev = document.getElementById('carouselPrev');
-const carouselNext = document.getElementById('carouselNext');
-const carouselIndicators = document.getElementById('carouselIndicators');
+const DOM = {
+    loadingScreen: document.getElementById('loadingScreen'),
+    scrollProgress: document.getElementById('scrollProgress'),
+    musicToggle: document.getElementById('musicToggle'),
+    backgroundMusic: document.getElementById('backgroundMusic'),
+    backToTop: document.getElementById('backToTop'),
+    heroSection: document.getElementById('heroSection'),
+    countdownSection: document.getElementById('countdownSection'),
+    carouselTrack: document.getElementById('carouselTrack'),
+    carouselPrev: document.getElementById('carouselPrev'),
+    carouselNext: document.getElementById('carouselNext'),
+    carouselIndicators: document.getElementById('carouselIndicators'),
+};
 
 // ============================================
 // INITIALIZATION
@@ -36,13 +38,12 @@ const carouselIndicators = document.getElementById('carouselIndicators');
 document.addEventListener('DOMContentLoaded', () => {
     initializeLoading();
     initializeScrollProgress();
-    initializeNavigation();
     initializeCountdown();
     initializeCarousel();
     initializeMusicControls();
     initializeBackToTop();
-    initializeEditableFields();
     initializeScrollAnimations();
+    initializeParallax();
 });
 
 // ============================================
@@ -50,11 +51,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // ============================================
 
 function initializeLoading() {
-    // Loading screen fades out after 3 seconds (defined in CSS)
-    // This ensures the page is ready
     setTimeout(() => {
-        loadingScreen.style.pointerEvents = 'none';
-    }, 3000);
+        DOM.loadingScreen.style.pointerEvents = 'none';
+    }, 2500);
 }
 
 // ============================================
@@ -69,20 +68,7 @@ function updateScrollProgress() {
     const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
     const scrolled = window.scrollY;
     const scrollPercent = scrollHeight > 0 ? (scrolled / scrollHeight) * 100 : 0;
-    scrollProgress.style.width = scrollPercent + '%';
-}
-
-// ============================================
-// NAVIGATION
-// ============================================
-
-function initializeNavigation() {
-    // Smooth scroll to details section
-    enterButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        const detailsSection = document.getElementById('detailsSection');
-        detailsSection.scrollIntoView({ behavior: 'smooth' });
-    });
+    DOM.scrollProgress.style.width = scrollPercent + '%';
 }
 
 // ============================================
@@ -99,10 +85,7 @@ function updateCountdown() {
     const timeLeft = CONFIG.weddingDate - now;
 
     if (timeLeft < 0) {
-        document.getElementById('days').textContent = '0';
-        document.getElementById('hours').textContent = '0';
-        document.getElementById('minutes').textContent = '0';
-        document.getElementById('seconds').textContent = '0';
+        setCountdownElements('0', '0', '0', '0');
         return;
     }
 
@@ -111,10 +94,24 @@ function updateCountdown() {
     const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-    document.getElementById('days').textContent = String(days).padStart(2, '0');
-    document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-    document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-    document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+    setCountdownElements(
+        String(days).padStart(2, '0'),
+        String(hours).padStart(2, '0'),
+        String(minutes).padStart(2, '0'),
+        String(seconds).padStart(2, '0')
+    );
+}
+
+function setCountdownElements(days, hours, minutes, seconds) {
+    const daysEl = document.getElementById('days');
+    const hoursEl = document.getElementById('hours');
+    const minutesEl = document.getElementById('minutes');
+    const secondsEl = document.getElementById('seconds');
+
+    if (daysEl) daysEl.textContent = days;
+    if (hoursEl) hoursEl.textContent = hours;
+    if (minutesEl) minutesEl.textContent = minutes;
+    if (secondsEl) secondsEl.textContent = seconds;
 }
 
 // ============================================
@@ -124,20 +121,23 @@ function updateCountdown() {
 function initializeCarousel() {
     const galleryItems = document.querySelectorAll('.gallery-item');
     const totalItems = galleryItems.length;
+
+    if (totalItems === 0) return;
+
     let currentIndex = 0;
 
     // Create indicators
-    for (let i = 0; i < totalItems; i++) {
+    galleryItems.forEach((_, index) => {
         const indicator = document.createElement('div');
         indicator.className = 'carousel-indicator';
-        if (i === 0) indicator.classList.add('active');
-        indicator.addEventListener('click', () => goToSlide(i));
-        carouselIndicators.appendChild(indicator);
-    }
+        if (index === 0) indicator.classList.add('active');
+        indicator.addEventListener('click', () => goToSlide(index));
+        DOM.carouselIndicators.appendChild(indicator);
+    });
 
     function updateCarousel() {
         const offset = -currentIndex * 100;
-        carouselTrack.style.transform = `translateX(${offset}%)`;
+        DOM.carouselTrack.style.transform = `translateX(${offset}%)`;
 
         // Update indicators
         document.querySelectorAll('.carousel-indicator').forEach((indicator, index) => {
@@ -146,7 +146,7 @@ function initializeCarousel() {
     }
 
     function goToSlide(index) {
-        currentIndex = index;
+        currentIndex = (index + totalItems) % totalItems;
         updateCarousel();
     }
 
@@ -161,8 +161,8 @@ function initializeCarousel() {
     }
 
     // Event listeners
-    carouselNext.addEventListener('click', nextSlide);
-    carouselPrev.addEventListener('click', prevSlide);
+    DOM.carouselNext.addEventListener('click', nextSlide);
+    DOM.carouselPrev.addEventListener('click', prevSlide);
 
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
@@ -170,8 +170,22 @@ function initializeCarousel() {
         if (e.key === 'ArrowLeft') prevSlide();
     });
 
-    // Auto-advance carousel every 5 seconds
-    setInterval(nextSlide, 5000);
+    // Touch navigation for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    DOM.carouselTrack.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    });
+
+    DOM.carouselTrack.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        if (touchStartX - touchEndX > 50) nextSlide();
+        if (touchEndX - touchStartX > 50) prevSlide();
+    });
+
+    // Auto-advance carousel
+    setInterval(nextSlide, 6000);
 }
 
 // ============================================
@@ -179,28 +193,20 @@ function initializeCarousel() {
 // ============================================
 
 function initializeMusicControls() {
-    musicToggle.addEventListener('click', toggleMusic);
-
-    // Auto-play music if enabled (muted initially for browser policies)
-    if (CONFIG.autoPlayMusic) {
-        backgroundMusic.muted = true;
-        backgroundMusic.play().catch(() => {
-            // Browser blocked auto-play, user must click play button
-        });
-    }
+    DOM.musicToggle.addEventListener('click', toggleMusic);
 }
 
 function toggleMusic() {
-    const isPlaying = !backgroundMusic.paused;
+    const isPlaying = !DOM.backgroundMusic.paused;
 
     if (isPlaying) {
-        backgroundMusic.pause();
-        musicToggle.classList.remove('active');
+        DOM.backgroundMusic.pause();
+        DOM.musicToggle.classList.remove('active');
     } else {
-        backgroundMusic.play().catch(() => {
-            console.log('Audio playback failed');
+        DOM.backgroundMusic.play().catch((error) => {
+            console.log('Audio playback failed:', error);
         });
-        musicToggle.classList.add('active');
+        DOM.musicToggle.classList.add('active');
     }
 }
 
@@ -211,88 +217,17 @@ function toggleMusic() {
 function initializeBackToTop() {
     window.addEventListener('scroll', () => {
         if (window.scrollY > 300) {
-            backToTop.classList.add('show');
+            DOM.backToTop.classList.add('show');
         } else {
-            backToTop.classList.remove('show');
+            DOM.backToTop.classList.remove('show');
         }
     });
 
-    backToTop.addEventListener('click', () => {
+    DOM.backToTop.addEventListener('click', () => {
         window.scrollTo({
             top: 0,
             behavior: 'smooth',
         });
-    });
-}
-
-// ============================================
-// EDITABLE FIELDS
-// ============================================
-
-function initializeEditableFields() {
-    const editableFields = document.querySelectorAll('.editable-field');
-
-    editableFields.forEach((field) => {
-        field.addEventListener('click', () => makeEditable(field));
-    });
-
-    // Load saved data from localStorage
-    loadSavedData();
-}
-
-function makeEditable(field) {
-    if (field.querySelector('input')) return; // Already editing
-
-    const currentText = field.textContent.trim();
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.value = currentText;
-    input.className = 'editable-input';
-    input.style.cssText = `
-        padding: 0.5rem;
-        border: 2px solid var(--color-gold);
-        border-radius: 4px;
-        font-family: inherit;
-        font-size: inherit;
-    `;
-
-    field.replaceWith(input);
-    input.focus();
-    input.select();
-
-    function finishEditing() {
-        const newText = input.value.trim() || currentText;
-        const newField = document.createElement('p');
-        newField.className = 'editable-field';
-        newField.textContent = newText;
-        newField.setAttribute('data-field', field.getAttribute('data-field'));
-        newField.addEventListener('click', () => makeEditable(newField));
-
-        input.replaceWith(newField);
-
-        // Save to localStorage
-        const fieldName = field.getAttribute('data-field');
-        if (fieldName) {
-            localStorage.setItem(`wedding_${fieldName}`, newText);
-        }
-    }
-
-    input.addEventListener('blur', finishEditing);
-    input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') finishEditing();
-    });
-}
-
-function loadSavedData() {
-    const fields = document.querySelectorAll('.editable-field');
-    fields.forEach((field) => {
-        const fieldName = field.getAttribute('data-field');
-        if (fieldName) {
-            const savedValue = localStorage.getItem(`wedding_${fieldName}`);
-            if (savedValue) {
-                field.textContent = savedValue;
-            }
-        }
     });
 }
 
@@ -315,34 +250,64 @@ function initializeScrollAnimations() {
         });
     }, observerOptions);
 
-    // Observe cards and sections
-    document.querySelectorAll('.detail-card, .rsvp-button').forEach((element) => {
-        element.style.opacity = '0';
-        element.style.transform = 'translateY(20px)';
-        element.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
-        observer.observe(element);
+    // Observe elements for scroll animations
+    const elementsToObserve = [
+        '.couple-story',
+        '.countdown-section',
+        '.gallery-section',
+        '.venue-section',
+    ];
+
+    elementsToObserve.forEach((selector) => {
+        document.querySelectorAll(selector).forEach((element) => {
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(30px)';
+            element.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
+            observer.observe(element);
+        });
     });
 }
 
 // ============================================
-// PARALLAX EFFECT (subtle)
+// PARALLAX EFFECT
 // ============================================
 
-window.addEventListener('scroll', () => {
-    const scrollY = window.scrollY;
-    const heroImage = document.querySelector('.hero-image-placeholder');
+function initializeParallax() {
+    window.addEventListener('scroll', () => {
+        const scrollY = window.scrollY;
+        const heroImage = document.querySelector('.hero-bg-image');
 
-    if (heroImage && scrollY < window.innerHeight) {
-        // Subtle parallax effect
-        heroImage.style.transform = `translateY(${scrollY * 0.5}px)`;
-    }
+        if (heroImage && scrollY < window.innerHeight) {
+            heroImage.style.transform = `translateY(${scrollY * 0.4}px)`;
+        }
+    });
+}
+
+// ============================================
+// SMOOTH SCROLL FOR INTERNAL LINKS
+// ============================================
+
+document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        if (href === '#') return;
+
+        e.preventDefault();
+        const target = document.querySelector(href);
+
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start',
+            });
+        }
+    });
 });
 
 // ============================================
-// PERFORMANCE OPTIMIZATION
+// LAZY LOADING FOR IMAGES
 // ============================================
 
-// Lazy loading for images (when real images are added)
 if ('IntersectionObserver' in window) {
     const imageObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
@@ -357,30 +322,105 @@ if ('IntersectionObserver' in window) {
         });
     });
 
-    document.querySelectorAll('img[data-src]').forEach((img) => imageObserver.observe(img));
+    document.querySelectorAll('img[data-src]').forEach((img) => {
+        imageObserver.observe(img);
+    });
 }
 
 // ============================================
-// UTILITY FUNCTIONS
+// UTILITY: BROWSER FEATURE DETECTION
 // ============================================
 
-// Log version info
-console.log('%c✨ Premium South Indian Wedding Invitation Website ✨', 'color: #D4AF37; font-size: 14px; font-weight: bold;');
-console.log('%cMade with ❤️', 'color: #5A3A22; font-size: 12px;');
-
-// Check for support
-function logSupport() {
-    const features = {
+function detectBrowserFeatures() {
+    return {
         localStorage: typeof Storage !== 'undefined',
         intersectionObserver: 'IntersectionObserver' in window,
         cssVariables: CSS.supports('color', 'var(--color-brown)'),
         smoothScroll: 'scrollBehavior' in document.documentElement.style,
+        touchEvents: 'ontouchstart' in window,
     };
+}
 
-    console.log('%c📋 Browser Support:', 'color: #D4AF37; font-weight: bold;');
-    Object.entries(features).forEach(([feature, supported]) => {
-        console.log(`  ${feature}: ${supported ? '✓' : '✗'}`);
+// ============================================
+// CONSOLE MESSAGING
+// ============================================
+
+console.log('%c✨ Sudharsan & Janani - Wedding Invitation ✨', 
+    'color: #D4AF37; font-size: 16px; font-weight: bold; text-shadow: 2px 2px 4px #5A3A22');
+console.log('%cMade with ❤️ and Care', 'color: #5A3A22; font-size: 12px; font-weight: bold;');
+
+const features = detectBrowserFeatures();
+console.log('%c📋 Browser Capabilities:', 'color: #D4AF37; font-weight: bold;');
+Object.entries(features).forEach(([feature, supported]) => {
+    console.log(`   ${feature}: ${supported ? '✓ Supported' : '✗ Not Supported'}`);
+});
+
+// ============================================
+// ACCESSIBILITY FEATURES
+// ============================================
+
+// Skip to main content link for accessibility
+function addAccessibilityFeatures() {
+    if (!document.querySelector('.skip-link')) {
+        const skipLink = document.createElement('a');
+        skipLink.href = '#main-content';
+        skipLink.className = 'skip-link';
+        skipLink.textContent = 'Skip to main content';
+        document.body.prepend(skipLink);
+    }
+}
+
+addAccessibilityFeatures();
+
+// ============================================
+// MOBILE MENU HANDLING (if needed)
+// ============================================
+
+// Detect viewport changes
+window.addEventListener('orientationchange', () => {
+    console.log('Orientation changed');
+});
+
+// ============================================
+// PERFORMANCE MONITORING
+// ============================================
+
+if (window.performance && window.performance.timing) {
+    window.addEventListener('load', () => {
+        const perfData = window.performance.timing;
+        const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
+        console.log(`%c⏱️ Page Load Time: ${pageLoadTime}ms`, 'color: #D4AF37;');
     });
 }
 
-logSupport();
+// ============================================
+// ERROR HANDLING
+// ============================================
+
+window.addEventListener('error', (event) => {
+    console.error('Global error:', event.error);
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+    console.error('Unhandled promise rejection:', event.reason);
+});
+
+// ============================================
+// RESPONSIVE IMAGE SRCSET SUPPORT
+// ============================================
+
+// Detect if browser supports srcset
+const supportsSrcset = 'srcset' in new Image();
+console.log(`%cSrcset Support: ${supportsSrcset ? '✓' : '✗'}`, 'color: #D4AF37;');
+
+// ============================================
+// VIEWPORT UNITS POLYFILL CHECK
+// ============================================
+
+const viewportUnitsSupport = () => {
+    const test = document.createElement('div');
+    test.style.width = '100vh';
+    return test.style.width !== '';
+};
+
+console.log(`%cViewport Units Support: ${viewportUnitsSupport() ? '✓' : '✗'}`, 'color: #D4AF37;');
