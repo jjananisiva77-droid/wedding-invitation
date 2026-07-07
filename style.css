@@ -79,18 +79,35 @@ align-items:center;
 .hero-bg{
 
 position:absolute;
-
 inset:0;
 
-background-image:url("../assets/images/hero.webp");
+background:url("hero.png");
 
 background-size:cover;
 
-background-position:center center;
+background-position:center;
+
+background-repeat:no-repeat;
+
+z-index:1;
+
+animation:heroZoom 18s ease-in-out infinite alternate;
+
+}
+
+@keyframes heroZoom{
+
+from{
+
+transform:scale(1);
+
+}
+
+to{
 
 transform:scale(1.08);
 
-z-index:1;
+}
 
 }
 
