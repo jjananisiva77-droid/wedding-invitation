@@ -1,431 +1,353 @@
-/* ============================================
+/* =======================================================
    SUDHARSAN ❤️ JANANI
    Premium Wedding Website
-============================================ */
+   Designed by ChatGPT
+======================================================= */
 
 :root{
 
---coffee:#4E342E;
---coffee-light:#6D4C41;
---gold:#D4AF37;
---gold-light:#F4D03F;
---ivory:#FFF9F2;
---white:#ffffff;
---text:#3b2f2f;
---shadow:0 20px 60px rgba(0,0,0,.25);
+    --coffee:#4E342E;
+    --coffee-light:#6D4C41;
+    --gold:#D4AF37;
+    --gold-light:#E7C45B;
+    --cream:#FFF8F2;
+    --white:#FFFFFF;
+    --black:#1E1E1E;
+
+    --shadow:
+        0 20px 60px rgba(0,0,0,.20);
+
+    --radius:24px;
+
+    --transition:.45s ease;
 
 }
 
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
+
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+
 }
 
 html{
 
-scroll-behavior:smooth;
+    scroll-behavior:smooth;
 
 }
 
 body{
 
-font-family:'Manrope',sans-serif;
-background:var(--ivory);
-overflow-x:hidden;
-color:var(--text);
+    background:var(--cream);
+
+    color:var(--coffee);
+
+    font-family:'Manrope',sans-serif;
+
+    overflow-x:hidden;
 
 }
 
-/* ========================= */
-
 img{
 
-width:100%;
-display:block;
+    width:100%;
+
+    display:block;
 
 }
 
 a{
 
-text-decoration:none;
+    text-decoration:none;
+
+    color:inherit;
+
+}
+
+ul{
+
+    list-style:none;
 
 }
 
 section{
 
-position:relative;
+    position:relative;
 
 }
 
-/* ========================= */
-/* HERO */
-/* ========================= */
+.container{
 
-.hero{
+    width:min(1200px,92%);
 
-height:100vh;
-position:relative;
-overflow:hidden;
-
-display:flex;
-justify-content:center;
-align-items:center;
+    margin:auto;
 
 }
 
-/* Background */
+/* =======================================================
+   TYPOGRAPHY
+======================================================= */
 
-.hero-bg{
+h1{
 
-position:absolute;
-inset:0;
+    font-family:'Cormorant Garamond',serif;
 
-background:url("hero.png");
-
-background-size:cover;
-
-background-position:center;
-
-background-repeat:no-repeat;
-
-z-index:1;
-
-animation:heroZoom 18s ease-in-out infinite alternate;
+    font-weight:600;
 
 }
 
-@keyframes heroZoom{
+h2{
 
-from{
+    font-family:'Cinzel',serif;
 
-transform:scale(1);
+    font-size:48px;
 
-}
-
-to{
-
-transform:scale(1.08);
+    letter-spacing:2px;
 
 }
 
-}
+h3{
 
-/* Overlay */
-
-.hero-overlay{
-
-position:absolute;
-
-inset:0;
-
-background:
-
-linear-gradient(
-
-180deg,
-
-rgba(0,0,0,.45),
-
-rgba(0,0,0,.15),
-
-rgba(0,0,0,.55)
-
-);
-
-z-index:2;
+    font-family:'Cormorant Garamond',serif;
 
 }
 
-/* ========================= */
+p{
 
-nav{
+    line-height:1.8;
 
-position:absolute;
-
-top:30px;
-
-left:50%;
-
-transform:translateX(-50%);
-
-width:90%;
-
-max-width:1300px;
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-z-index:10;
+    font-size:17px;
 
 }
 
-/* Logo */
+.section-title{
 
-.logo{
+    text-align:center;
 
-font-family:'Cinzel',serif;
-
-font-size:34px;
-
-color:white;
-
-letter-spacing:6px;
+    margin-bottom:80px;
 
 }
 
-/* Menu */
+.section-title span{
 
-nav ul{
+    color:var(--gold);
 
-display:flex;
+    text-transform:uppercase;
 
-gap:35px;
+    letter-spacing:5px;
 
-list-style:none;
-
-}
-
-nav ul li a{
-
-color:white;
-
-font-size:15px;
-
-letter-spacing:2px;
-
-transition:.4s;
+    font-size:13px;
 
 }
 
-nav ul li a:hover{
+.section-title h2{
 
-color:var(--gold);
-
-}
-
-/* ========================= */
-
-.hero-content{
-
-position:relative;
-
-z-index:10;
-
-text-align:center;
-
-color:white;
+    margin-top:18px;
 
 }
 
-/* blessing */
+/* =======================================================
+   LOADER
+======================================================= */
 
-.hero-top p{
+#loader{
 
-letter-spacing:6px;
+    position:fixed;
 
-font-size:14px;
+    inset:0;
 
-opacity:.8;
+    background:
 
-}
+    linear-gradient(135deg,
 
-.hero-top h3{
+    #2b1d18,
 
-font-family:'Cinzel';
+    #4E342E);
 
-margin-top:10px;
+    z-index:99999;
 
-font-size:22px;
+    display:flex;
 
-color:var(--gold);
+    justify-content:center;
 
-letter-spacing:4px;
-
-}
-
-/* Couple */
-
-.hero-middle{
-
-margin-top:70px;
+    align-items:center;
 
 }
 
-.hero-middle h1{
+.loader-content{
 
-font-family:'Cormorant Garamond';
-
-font-size:110px;
-
-font-weight:600;
-
-line-height:1;
-
-text-shadow:
-
-0 8px 40px rgba(0,0,0,.5);
+    text-align:center;
 
 }
 
-/* Heart */
+.loader-om{
 
-.hero-heart{
+    font-size:90px;
 
-margin:30px 0;
+    color:var(--gold);
 
-}
-
-.hero-heart i{
-
-font-size:35px;
-
-color:#ffccd5;
-
-animation:heartbeat 2s infinite;
+    animation:loaderFloat 2s infinite ease-in-out;
 
 }
 
-@keyframes heartbeat{
+.loader-content h2{
+
+    color:white;
+
+    margin-top:20px;
+
+}
+
+.loader-content span{
+
+    color:var(--gold);
+
+}
+
+.loader-content p{
+
+    color:white;
+
+    opacity:.8;
+
+    margin-top:15px;
+
+}
+
+@keyframes loaderFloat{
 
 0%,100%{
 
-transform:scale(1);
+transform:translateY(0);
 
 }
 
 50%{
 
-transform:scale(1.25);
+transform:translateY(-15px);
 
 }
 
 }
 
-/* Bottom */
+/* =======================================================
+   FLOATING PETALS
+======================================================= */
 
-.hero-bottom{
+.petals{
 
-margin-top:60px;
+    position:fixed;
 
-}
+    inset:0;
 
-.hero-bottom p{
+    pointer-events:none;
 
-font-size:18px;
-
-line-height:35px;
-
-max-width:700px;
-
-margin:auto;
+    z-index:3;
 
 }
 
-/* Button */
+.petals span{
 
-.enter-btn{
+    position:absolute;
 
-display:inline-flex;
+    width:14px;
 
-gap:12px;
+    height:14px;
 
-align-items:center;
+    border-radius:50% 0;
 
-margin-top:40px;
+    background:#FFD9E2;
 
-padding:18px 45px;
+    opacity:.6;
 
-border:2px solid var(--gold);
-
-color:white;
-
-border-radius:60px;
-
-backdrop-filter:blur(10px);
-
-transition:.45s;
-
-font-weight:600;
-
-letter-spacing:2px;
+    animation:petals 18s linear infinite;
 
 }
 
-.enter-btn:hover{
+.petals span:nth-child(1){
 
-background:var(--gold);
+left:8%;
 
-color:#222;
-
-transform:translateY(-5px);
-
-box-shadow:
-
-0 15px 40px rgba(212,175,55,.45);
+animation-delay:0s;
 
 }
 
-/* Scroll */
+.petals span:nth-child(2){
 
-.scroll-indicator{
+left:22%;
 
-position:absolute;
-
-bottom:30px;
-
-left:50%;
-
-transform:translateX(-50%);
-
-z-index:20;
+animation-delay:3s;
 
 }
 
-.scroll-indicator span{
+.petals span:nth-child(3){
 
-display:block;
+left:38%;
 
-width:2px;
-
-height:70px;
-
-background:white;
-
-position:relative;
-
-overflow:hidden;
+animation-delay:6s;
 
 }
 
-.scroll-indicator span::after{
+.petals span:nth-child(4){
 
-content:"";
+left:56%;
 
-position:absolute;
-
-top:-20px;
-
-left:0;
-
-width:100%;
-
-height:20px;
-
-background:var(--gold);
-
-animation:scrollLine 2s infinite;
+animation-delay:2s;
 
 }
 
-@keyframes scrollLine{
+.petals span:nth-child(5){
+
+left:70%;
+
+animation-delay:5s;
+
+}
+
+.petals span:nth-child(6){
+
+left:82%;
+
+animation-delay:8s;
+
+}
+
+.petals span:nth-child(7){
+
+left:90%;
+
+animation-delay:1s;
+
+}
+
+.petals span:nth-child(8){
+
+left:96%;
+
+animation-delay:4s;
+
+}
+
+@keyframes petals{
+
+0%{
+
+top:-10%;
+
+transform:rotate(0deg);
+
+}
 
 100%{
 
-top:90px;
+top:110%;
+
+transform:
+
+rotate(720deg)
+
+translateX(80px);
 
 }
 
